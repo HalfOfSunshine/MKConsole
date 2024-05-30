@@ -47,10 +47,9 @@ void MKLog(NSString *format, ...){
 
 -(void)log:(NSString *)format{
     if (![self.keyWindow.subviews containsObject:self.textView]) {
-        [self.keyWindow addSubview:self.textView];
-        [self.keyWindow addSubview:self.cleanBtn];
-        [self.keyWindow addSubview:self.foldBtn];
+        [self addAllSubViews];
     }
+    [self bringAllSubviewToFront];
     NSString *oldText = self.textView.text;
     self.textView.text = [NSString stringWithFormat:@"%@%@\n",oldText,format];
     
@@ -60,7 +59,7 @@ void MKLog(NSString *format, ...){
     [self.textView scrollRangeToVisible:range];
 }
 
-- (UIWindow *)getFrontKeyWindow {
+- (UIWindow *)getFrontKeyWindow{
     if([[[UIApplication sharedApplication] delegate] respondsToSelector:@selector(window)]&&[[[UIApplication sharedApplication] delegate] window]){
         return [[[UIApplication sharedApplication] delegate] window];
     }
@@ -97,6 +96,18 @@ void MKLog(NSString *format, ...){
         }
     }];
 }
+
+-(void)addAllSubViews{
+    [self.keyWindow addSubview:self.textView];
+    [self.keyWindow addSubview:self.cleanBtn];
+    [self.keyWindow addSubview:self.foldBtn];
+}
+
+-(void)bringAllSubviewToFront{
+    [self.keyWindow addSubview:_textView];
+    [self.keyWindow addSubview:_cleanBtn];
+    [self.keyWindow addSubview:_foldBtn];
+}
 #pragma mark =============== getter&setter ===============
 +(void)setEnable:(BOOL)enable{
     [[MKConsole shared] setEnable:enable];
@@ -116,9 +127,7 @@ void MKLog(NSString *format, ...){
         [_foldBtn removeFromSuperview];
         _foldBtn = nil;
     }else{
-        [self.keyWindow addSubview:self.textView];
-        [self.keyWindow addSubview:self.cleanBtn];
-        [self.keyWindow addSubview:self.foldBtn];
+        [self addAllSubViews];
     }
 }
 
@@ -131,7 +140,6 @@ void MKLog(NSString *format, ...){
         _textView.editable = NO;
         _textView.scrollEnabled = YES;
     }
-    [self.keyWindow bringSubviewToFront:_textView];
     return _textView;
 }
 
@@ -153,7 +161,6 @@ void MKLog(NSString *format, ...){
         _cleanBtn.layer.borderWidth = 0.5f;
         [_cleanBtn addTarget:self action:@selector(clean) forControlEvents:UIControlEventTouchUpInside];
     }
-    [self.keyWindow bringSubviewToFront:_cleanBtn];
     return _cleanBtn;
 }
 
@@ -169,7 +176,6 @@ void MKLog(NSString *format, ...){
         _foldBtn.layer.borderWidth = 0.5f;
         [_foldBtn addTarget:self action:@selector(fold:) forControlEvents:UIControlEventTouchUpInside];
     }
-    [self.keyWindow bringSubviewToFront:_foldBtn];
     return _foldBtn;
 }
 @end
