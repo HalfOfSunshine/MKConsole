@@ -16,10 +16,10 @@ FOUNDATION_EXPORT const unsigned char MKConsoleVersionString[];
 
 #import <Foundation/Foundation.h>
 
-///如果需要直接输出系统的NSLog，将下面这段直接复制到prifixHeader即可
+///如果需要直接输出系统的NSLog，将下面这段直接复制到PrefixHeader即可
 // ===================>
 
-//#import <MKConsole.h>
+//#import <MKConsole/MKConsole.h>
 
 ////只在Debug模式下执行NSLog
 //#ifndef DEBUG
