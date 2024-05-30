@@ -92,7 +92,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.source_files  =  "MKConsole/**/*.{h,m}"
-  # spec.exclude_files = "Classes/Exclude"
+  spec.exclude_files = "MKConsole/MKConsoleTests","MKConsole/MKConsoleUITests"
 
   # spec.public_header_files = "Classes/**/*.h"
 
