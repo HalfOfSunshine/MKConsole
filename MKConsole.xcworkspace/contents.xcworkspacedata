@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:MKConsole.podspec">
+   </FileRef>
+   <FileRef
       location = "group:ConslogDemo/ConslogDemo.xcodeproj">
    </FileRef>
    <FileRef

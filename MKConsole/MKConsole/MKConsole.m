@@ -156,6 +156,7 @@ void MKLog(NSString *format, ...){
         [_cleanBtn setTitle:@"清空" forState:UIControlStateNormal];
         [_cleanBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _cleanBtn.titleLabel.font = [UIFont systemFontOfSize:12.];
+        _cleanBtn.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.3];
         _cleanBtn.layer.cornerRadius = 5.;
         _cleanBtn.layer.borderColor = [[UIColor blackColor] CGColor];
         _cleanBtn.layer.borderWidth = 0.5f;
@@ -171,6 +172,7 @@ void MKLog(NSString *format, ...){
         [_foldBtn setTitle:@"展开" forState:UIControlStateSelected];
         [_foldBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _foldBtn.titleLabel.font = [UIFont systemFontOfSize:12.];
+        _foldBtn.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.3];
         _foldBtn.layer.cornerRadius = 5.;
         _foldBtn.layer.borderColor = [[UIColor blackColor] CGColor];
         _foldBtn.layer.borderWidth = 0.5f;
