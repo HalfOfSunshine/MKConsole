@@ -10,7 +10,8 @@
 @property (nonatomic, weak) UIWindow *keyWindow;
 @property (nonatomic, strong) UIButton *cleanBtn;
 @property (nonatomic, strong) UIButton *foldBtn;
-
+@property (nonatomic, assign) int originalFD;
+@property (nonatomic, strong) NSFileHandle *pipeReadHandle;
 @end
 
 @implementation MKConsole
@@ -32,12 +33,9 @@
     return self;
 }
 
-
 #pragma mark =============== Core Function ===============
 void MKLog(NSString *format, ...){
-    
     if (![[MKConsole shared] enable]) return;
-    
     va_list args;
     va_start(args, format);
     NSString *formattedString = [[NSString alloc] initWithFormat:format arguments:args];
@@ -50,15 +48,43 @@ void MKLog(NSString *format, ...){
         [self addAllSubViews];
     }
     [self bringAllSubviewToFront];
-    NSString *oldText = self.textView.text;
-    self.textView.text = [NSString stringWithFormat:@"%@%@\n",oldText,format];
     
+    self.textView.text = [NSString stringWithFormat:@"%@%@\n", self.textView.text,format];
     [self.textView setNeedsLayout];
-    
-    NSRange range = NSMakeRange(self.textView.text.length - 1, 1);
+    NSRange range = NSMakeRange(self.textView.text.length - 1, 0);
     [self.textView scrollRangeToVisible:range];
 }
 
+#pragma mark =============== systemLog ===============
+- (void)redirectNotificationHandle:(NSNotification *)nf{ // 通知方法
+    NSData *data = [[nf userInfo] objectForKey:NSFileHandleNotificationDataItem];
+    NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+     
+    [self log:str];
+    [[nf object] readInBackgroundAndNotify];
+}
+ 
+- (void)redirectSTD:(int )fd{
+    NSPipe * pipe = [NSPipe pipe] ;// 初始化一个NSPipe 对象
+    NSFileHandle *pipeReadHandle = [pipe fileHandleForReading] ;
+    // 保存原始文件描述符
+    int originalFD = dup(fd);
+    
+    // 重定向文件描述符
+    dup2([[pipe fileHandleForWriting] fileDescriptor], fd) ;
+     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(redirectNotificationHandle:)
+                                                 name:NSFileHandleReadCompletionNotification
+                                               object:pipeReadHandle]; // 注册通知
+    [pipeReadHandle readInBackgroundAndNotify];
+    
+    // 存储原始文件描述符以便以后恢复
+    self.originalFD = originalFD;
+    self.pipeReadHandle = pipeReadHandle;
+}
+
+#pragma mark =============== UI Operation ===============
 - (UIWindow *)getFrontKeyWindow{
     if([[[UIApplication sharedApplication] delegate] respondsToSelector:@selector(window)]&&[[[UIApplication sharedApplication] delegate] window]){
         return [[[UIApplication sharedApplication] delegate] window];
@@ -110,12 +136,22 @@ void MKLog(NSString *format, ...){
     [self.keyWindow addSubview:_cleanBtn];
     [self.keyWindow addSubview:_foldBtn];
 }
+
+
 #pragma mark =============== getter&setter ===============
-+(void)setEnable:(BOOL)enable{
-    [[MKConsole shared] setEnable:enable];
-}
-+(BOOL)enable{
-    return [[MKConsole shared] enable];
+- (void)setPrintSystemLog:(BOOL)printSystemLog{
+    if (printSystemLog) {
+        [self redirectSTD:STDOUT_FILENO];
+        [self redirectSTD:STDERR_FILENO];
+    }else{
+        [[NSNotificationCenter defaultCenter] removeObserver:self];
+        // 恢复原始文件描述符
+        dup2(self.originalFD, STDOUT_FILENO);
+        close(self.originalFD);
+        
+        self.originalFD = -1;
+        self.pipeReadHandle = nil;
+    }
 }
 - (void)setEnable:(BOOL)enable{
     _enable = enable;

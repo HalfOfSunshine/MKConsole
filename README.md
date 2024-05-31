@@ -13,12 +13,7 @@
     MKLog(@"这个是%@",name);
 ```
 
-如需替换系统的NSLog，在PrefixHeader内添加以下内容：
+开启系统打印日志：
 ```
-    //只在Debug模式下执行NSLog
-    #ifndef DEBUG
-    #define NSLog(fmt, ...) MKLog((fmt),##__VA_ARGS__)
-    #else
-    //.....你自己的逻辑
-    #endif
+    [[MKConsole shared] setPrintSystemLog:YES];
 ```

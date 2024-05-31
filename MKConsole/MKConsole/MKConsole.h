@@ -16,32 +16,21 @@ FOUNDATION_EXPORT const unsigned char MKConsoleVersionString[];
 
 #import <Foundation/Foundation.h>
 
-///如果需要直接输出系统的NSLog，将下面这段直接复制到PrefixHeader即可
-// ===================>
-
-//#import <MKConsole/MKConsole.h>
-
-////只在Debug模式下执行NSLog
-//#ifndef DEBUG
-//#define NSLog(fmt, ...) MKLog((fmt),##__VA_ARGS__)
-//#else
-//......
-//#endif
-
-// <==================
-
 NS_ASSUME_NONNULL_BEGIN
 
 @interface MKConsole : NSObject
-@property (nonatomic, strong) UITextView *textView;
-@property (nonatomic) BOOL enable;
 
++ (id)shared;
+
+/// 打印方法，使用同方式NSLog()
+/// - Parameter format: 打印内容
 void MKLog(NSString *format, ...);
 
+/// 总开关，默认打开。
+@property (nonatomic) BOOL logEnable;
 
-/// UI开关，默认开启。  如通过宏替换了NSLog，关闭之后NSLog依然不会输出。
-+(void)setEnable:(BOOL)enable;
-
+/// 是否打印系统日志，默认打开
+@property (nonatomic) BOOL printSystemLog;
 @end
 
 NS_ASSUME_NONNULL_END
