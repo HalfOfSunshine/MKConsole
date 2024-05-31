@@ -10,6 +10,7 @@
 @property (nonatomic, weak) UIWindow *keyWindow;
 @property (nonatomic, strong) UIButton *cleanBtn;
 @property (nonatomic, strong) UIButton *foldBtn;
+@property (nonatomic, strong) UITextView *textView;
 @property (nonatomic, assign) int originalFD;
 @property (nonatomic, strong) NSFileHandle *pipeReadHandle;
 @end
@@ -28,14 +29,14 @@
 {
     self = [super init];
     if (self) {
-        self.enable = YES;
+        self.logEnable = YES;
     }
     return self;
 }
 
 #pragma mark =============== Core Function ===============
 void MKLog(NSString *format, ...){
-    if (![[MKConsole shared] enable]) return;
+    if (![[MKConsole shared] logEnable]) return;
     va_list args;
     va_start(args, format);
     NSString *formattedString = [[NSString alloc] initWithFormat:format arguments:args];
@@ -153,9 +154,9 @@ void MKLog(NSString *format, ...){
         self.pipeReadHandle = nil;
     }
 }
-- (void)setEnable:(BOOL)enable{
-    _enable = enable;
-    if (!_enable) {
+- (void)setLogEnable:(BOOL)logEnable{
+    _logEnable = logEnable;
+    if (!_logEnable) {
         [_textView removeFromSuperview];
         _textView = nil;
         
