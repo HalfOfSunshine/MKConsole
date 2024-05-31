@@ -65,11 +65,13 @@ void MKLog(NSString *format, ...){
     }
     
     if (@available(iOS 13.0,*)) {
-        NSArray *arr = [[[UIApplication sharedApplication] connectedScenes] allObjects];
-        UIWindowScene *windowScene =  (UIWindowScene *)arr[0];
-        UIWindow *mainWindow = [windowScene valueForKeyPath:@"delegate.window"];
-        if(mainWindow) return mainWindow;
-        return [UIApplication sharedApplication].windows.firstObject;
+        if ([[[UIApplication sharedApplication] connectedScenes] allObjects].count>0) {
+            NSArray *arr = [[[UIApplication sharedApplication] connectedScenes] allObjects];
+            UIWindowScene *windowScene =  (UIWindowScene *)arr[0];
+            UIWindow *mainWindow = [windowScene valueForKeyPath:@"delegate.window"];
+            if(mainWindow) return mainWindow;
+            return [UIApplication sharedApplication].windows.firstObject;
+        }
     }
     return [UIApplication sharedApplication].keyWindow;
 }
