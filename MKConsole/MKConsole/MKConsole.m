@@ -108,22 +108,41 @@ void MKLog(NSString *format, ...){
     self.textView.text = @"";
 }
 
--(void)fold:(UIButton*)foldBtn{
-    foldBtn.selected = !foldBtn.selected;
+-(void)changeLogSize:(UIButton*)foldBtn{
     __weak typeof(self) weakSelf = self;
-    [UIView animateWithDuration:0.5 animations:^{
-        UIEdgeInsets safeAreaInsets = [UIApplication sharedApplication].windows[0].safeAreaInsets;
-        CGFloat safeAreaHeight = (safeAreaInsets.bottom != 0)?safeAreaInsets.bottom:0;
-        if (foldBtn.selected) {
+    if ([_foldBtn.titleLabel.text isEqualToString:@"收起"]) {
+        [UIView animateWithDuration:0.5 animations:^{
+            UIEdgeInsets safeAreaInsets = [UIApplication sharedApplication].windows[0].safeAreaInsets;
+            CGFloat safeAreaHeight = (safeAreaInsets.bottom != 0)?safeAreaInsets.bottom:0;
+
             weakSelf.textView.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height, [UIScreen mainScreen].bounds.size.width,0);
             weakSelf.foldBtn.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-110, [UIScreen mainScreen].bounds.size.height-safeAreaHeight-20, 40, 20);
             weakSelf.cleanBtn.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-60, [UIScreen mainScreen].bounds.size.height-safeAreaHeight-20, 40, 20);
-        }else{
+            [self->_foldBtn setTitle:@"折叠" forState:UIControlStateNormal];
+        }];
+    }else if([_foldBtn.titleLabel.text isEqualToString:@"展开"]){
+        [UIView animateWithDuration:0.5 animations:^{
+            weakSelf.textView.frame = CGRectMake(0, 150, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.height-155);
+            weakSelf.foldBtn.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-110, 150-20, 40, 20);
+            weakSelf.cleanBtn.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-60, 150-20, 40, 20);
+                [self->_foldBtn setTitle:@"收起" forState:UIControlStateNormal];
+        }];
+    }else if([_foldBtn.titleLabel.text isEqualToString:@"折叠"]){
+        [UIView animateWithDuration:0.5 animations:^{
             weakSelf.textView.frame = CGRectMake(0, [UIScreen mainScreen].bounds.size.height-105, [UIScreen mainScreen].bounds.size.width,100);
             weakSelf.foldBtn.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-110, [UIScreen mainScreen].bounds.size.height-105-20, 40, 20);
             weakSelf.cleanBtn.frame = CGRectMake([UIScreen mainScreen].bounds.size.width-60, [UIScreen mainScreen].bounds.size.height-105-20, 40, 20);
-        }
-    }];
+                [self->_foldBtn setTitle:@"展开" forState:UIControlStateNormal];
+            
+            CGFloat contentHeight = self.textView.contentSize.height;
+            CGFloat viewHeight = self.textView.bounds.size.height;
+            if (contentHeight > viewHeight) {
+                CGPoint offset = CGPointMake(0, contentHeight - viewHeight);
+                [self.textView setContentOffset:offset animated:NO];
+            }
+        }];
+    }
+
 }
 
 -(void)addAllSubViews{
@@ -207,15 +226,14 @@ void MKLog(NSString *format, ...){
 - (UIButton *)foldBtn{
     if (!_foldBtn) {
         _foldBtn = [[UIButton alloc]initWithFrame:CGRectMake([UIScreen mainScreen].bounds.size.width-110, [UIScreen mainScreen].bounds.size.height-105-20, 40, 20)];
-        [_foldBtn setTitle:@"收起" forState:UIControlStateNormal];
-        [_foldBtn setTitle:@"展开" forState:UIControlStateSelected];
+        [_foldBtn setTitle:@"展开" forState:UIControlStateNormal];
         [_foldBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         _foldBtn.titleLabel.font = [UIFont systemFontOfSize:12.];
         _foldBtn.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.3];
         _foldBtn.layer.cornerRadius = 5.;
         _foldBtn.layer.borderColor = [[UIColor blackColor] CGColor];
         _foldBtn.layer.borderWidth = 0.5f;
-        [_foldBtn addTarget:self action:@selector(fold:) forControlEvents:UIControlEventTouchUpInside];
+        [_foldBtn addTarget:self action:@selector(changeLogSize:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _foldBtn;
 }
