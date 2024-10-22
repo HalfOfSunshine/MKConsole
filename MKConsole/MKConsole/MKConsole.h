@@ -31,6 +31,9 @@ void MKLog(NSString *format, ...);
 
 /// 是否打印系统日志，默认打开
 @property (nonatomic) BOOL printSystemLog;
+
+/// 清空log内容
+-(void)clean;
 @end
 
 NS_ASSUME_NONNULL_END
