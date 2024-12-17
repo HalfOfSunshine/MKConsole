@@ -160,6 +160,7 @@ void MKLog(NSString *format, ...){
 
 #pragma mark =============== getter&setter ===============
 - (void)setPrintSystemLog:(BOOL)printSystemLog{
+    _printSystemLog = printSystemLog;
     if (printSystemLog) {
         [self redirectSTD:STDOUT_FILENO];
         [self redirectSTD:STDERR_FILENO];
